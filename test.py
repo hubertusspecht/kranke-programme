@@ -10,6 +10,7 @@ def move_symbol(symbol, width, height):
 
     return moved
 
+
 def rotate_by_origin(symbol):
     
     def rotate_diagonal(x,y):
@@ -22,7 +23,6 @@ def rotate_by_origin(symbol):
             else:
                 x *= -1
         return (x,y)
-  
   
     def rotate_straight(x,y):
         
@@ -43,31 +43,19 @@ def rotate_by_origin(symbol):
             symbol[i] = rotate_straight(x,y)
 
     return symbol
-    
-def validity_check_side(symbol,x_pos,y_pos):
 
-    symbol_position = move_symbol(symbol, x_pos,y_pos)
+
+
+def validity_check_side(symbol,x_pos,y_pos, dir):
+
+    symbol_position = move_symbol(symbol, x_pos + dir ,y_pos)
 
     for x,y in symbol_position:
-        if x <= 0 or x >= 9:
+        if x < 0 or x > 9:
             return False
 
     return True 
-
-
     
-def main():
-    
-    print(4%1)
-    symbol = [(0,0),(0,1),(0,2),(-1,0)]
-    for i in range(5):
-        
-
-        symbol = rotate_by_origin(symbol)
-
-        moved_symbol = move_symbol(symbol,5,i)
- 
-
 
 # pygame setup
 pygame.init()
@@ -95,11 +83,27 @@ current_symbol = choice(symbols)
 x_pos = 5
 y_pos = 5
 
+set_blocks = {}
+
 while running:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+
+        if event.type == pygame.KEYDOWN:
+            
+            if event.key == pygame.K_w: 
+                current_symbol = rotate_by_origin(current_symbol)
+            if event.key == pygame.K_s: 
+                continue
+            if event.key == pygame.K_a: 
+                if validity_check_side(current_symbol,x_pos,y_pos, -1):
+                    x_pos -= 1
+            if event.key == pygame.K_d: 
+                if validity_check_side(current_symbol,x_pos,y_pos, 1):
+                    x_pos += 1
+
 
     screen.fill("black")
 
@@ -112,28 +116,10 @@ while running:
     pygame.draw.rect(screen, "red", (0,0,WIDTH,102))
 
 
-
-    keys = pygame.key.get_pressed()
-    if keys[pygame.K_w]:
-        current_symbol = rotate_by_origin(current_symbol)
-    if keys[pygame.K_s]:
-        continue
-    if keys[pygame.K_a]:
-        if validity_check_side(current_symbol,x_pos,y_pos):
-            x_pos -= 1
-
-    if keys[pygame.K_d]:
-        if validity_check_side(current_symbol,x_pos,y_pos):
-            x_pos += 1
-    
-
     moved_symbol = move_symbol(current_symbol,x_pos,y_pos)
 
     for x,y in moved_symbol:
         pygame.draw.rect(screen, "green", (x*block_size+1,y*block_size+1,50,50))
-
-
-
 
 
     # flip() the display to put your work on screen
